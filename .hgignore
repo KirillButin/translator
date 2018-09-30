@@ -1,0 +1,16 @@
+syntax: glob
+
+# build folders
+bin/Debug/
+obj/
+
+# build results
+publish/
+
+# user-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# vs directories
+.vs/
