@@ -15,11 +15,21 @@ namespace TranslatorNS
             PLUS, MINUS, LESS, SEMI, EQUAL, INT, ID, EOI
         };
 
+        private enum StatementType { VAR, CST, ADD, SUB, LT, SET,
+        IF1, IF2, WHILE, DO, EMPTY, SEQ, EXPR, PROG };
+
         private Dictionary<string, string> myDict = new Dictionary<string, string>
         {
             {"if", "если"},
             {"{", "левая_скобка"},
             {"while", "пока"}
+        };
+
+        private Dictionary<string, Token> myDictST = new Dictionary<string, Token>
+        {
+            {"if", Token.If},
+            {"{", Token.LBRA},
+            {"while", Token.WHILE_SYM}
         };
 
         private static char[] separ = { ' ', '\n', '\t' };
@@ -38,6 +48,39 @@ namespace TranslatorNS
             public Token type;
             public string value;
         }
+
+        StatementType Statement()
+        {
+            StatementType res = StatementType.EMPTY;
+            Element elem = NextToken();
+            if (elem.type == Token.If)
+            {
+                res = StatementType.IF1;
+                GetToken();
+                ParenExpr();
+                Statement();
+            }
+            elem = NextToken();
+            if (elem.type == Token.Else)
+            {
+                GetToken();
+                Statement();
+            }
+
+            return res;
+        }
+
+        void ParenExpr()
+        {
+            Element elem = GetToken();
+            if (elem.type != Token.LBRA)
+                throw new Exception();
+            Expr();
+            elem = GetToken();
+            if (elem.type != Token.RBRA)
+                throw new Exception();
+        }
+
 
         private Element GetToken()
         {
@@ -109,14 +152,17 @@ namespace TranslatorNS
             return res;
         }
 
+        /* <expr> ::= <test> | <id> "=" <expr> */
         private int Expr()
         {
-            int res = Term();
-            while (NextToken().type == Token.SumOp)
-            {
-                GetToken();
-                res = res + Term();
+            Element elem = NextToken();
+            if (elem.type == Token.ID)
+                Test();
+            else
+            { 
+            
             }
+
             return res;
         }
 

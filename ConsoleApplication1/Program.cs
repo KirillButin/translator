@@ -13,9 +13,10 @@ namespace TranslatorNS
         static void Main(string[] args)
         {
             string s = "if while 2  \t  *   343+     \n 12";
+           // s = Console.ReadLine();
 
             Translator t = new Translator();
-
+            
             Console.WriteLine(t.Translate(s));            
 
             return;
