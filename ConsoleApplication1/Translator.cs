@@ -16,7 +16,7 @@ namespace TranslatorNS
         };
 
         private enum StatementType { VAR, CST, ADD, SUB, LT, SET,
-        IF1, IF2, WHILE, DO, EMPTY, SEQ, EXPR, PROG };
+        IF1, IF2, WHILE, DO, EMPTY, SEQ, EXPR, PROG, };
 
         private Dictionary<string, string> myDict = new Dictionary<string, string>
         {
@@ -70,8 +70,9 @@ namespace TranslatorNS
             return res;
         }
 
-        void ParenExpr()
+        StatementType ParenExpr()
         {
+            StatementType res = StatementType.EMPTY;
             Element elem = GetToken();
             if (elem.type != Token.LBRA)
                 throw new Exception();
@@ -79,6 +80,7 @@ namespace TranslatorNS
             elem = GetToken();
             if (elem.type != Token.RBRA)
                 throw new Exception();
+            return res;
         }
 
 
@@ -152,33 +154,85 @@ namespace TranslatorNS
             return res;
         }
 
-        /* <expr> ::= <test> | <id> "=" <expr> */
-        private int Expr()
-        {
+        //<term> ::= <id> | <int> | <paren-expr>
+        private StatementType Term()
+        {           
             Element elem = NextToken();
+            StatementType res = StatementType.EMPTY;
             if (elem.type == Token.ID)
-                Test();
-            else
-            { 
-            
-            }
-
-            return res;
-        }
-
-        private int Term()
-        {
-            Element elem = GetToken();
-            int res = int.Parse(elem.value);
-
-            while (NextToken().type == Token.MulOp)
             {
                 GetToken();
-                Element elem2 = GetToken();
-                res = res * int.Parse(elem2.value);
+                return StatementType.VAR;            
             }
+
+            if (elem.type == Token.Number)
+            {
+                GetToken();
+                return StatementType.CST;
+            }
+
+            res = ParenExpr();
+
             return res;
         }
+
+        //<sum>  ::= <term> | <sum> "+" <term> | <sum> "-" <term>
+        private StatementType Sum()
+        {
+            StatementType res = Term();
+            
+
+            return res;
+        }
+
+
+        //<test> ::= <sum> | <sum> "<" <sum>
+        private StatementType Test()
+        {
+            StatementType res = Sum();
+            Element elem = NextToken();
+            if (elem.type == Token.ID)
+                return Test();
+            else
+            {
+
+            }
+
+            return res;
+        }
+
+        /* <expr> ::= <test> | <id> "=" <expr> */
+        private StatementType Expr()
+        {
+            StatementType res = StatementType.EMPTY;
+            Element elem = NextToken();
+            if (elem.type != Token.ID)
+                return Test();
+            res = Test();
+            if (res == StatementType.VAR && NextToken().type == Token.EQUAL)
+            {
+                GetToken();
+                res = StatementType.SET;
+                Expr();
+            }
+
+
+            return res;
+        }
+
+        //private int Term()
+        //{
+        //    Element elem = GetToken();
+        //    int res = int.Parse(elem.value);
+
+        //    while (NextToken().type == Token.MulOp)
+        //    {
+        //        GetToken();
+        //        Element elem2 = GetToken();
+        //        res = res * int.Parse(elem2.value);
+        //    }
+        //    return res;
+        //}
 
 
         public string Translate(string _code)
