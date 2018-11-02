@@ -18,6 +18,14 @@ namespace TranslatorNS
         private enum StatementType { VAR, CST, ADD, SUB, LT, SET,
         IF1, IF2, WHILE, DO, EMPTY, SEQ, EXPR, PROG, };
 
+        private Dictionary<string, Token> myDictTokens = new Dictionary<string, Token>
+        {
+            {"if", Token.If},
+            {"else", Token.Else},
+            {"while", Token.WHILE_SYM},
+            {"do", Token.DO_SYM},
+        };
+
         private Dictionary<string, string> myDict = new Dictionary<string, string>
         {
             {"if", "если"},
@@ -88,7 +96,7 @@ namespace TranslatorNS
         {
             Element res = new Element();
             res.value = "";
-
+            res.type = Token.End;
             while (true)
             {
                 if (pos >= code.Length) break;
@@ -138,10 +146,14 @@ namespace TranslatorNS
                                 res.value += code[pos];
                                 pos++;
                                 if (pos >= code.Length)
+                                {
+                                  
                                     break;
+                                }
                             }
                         }
-
+            if (myDictTokens.ContainsKey(res.value))
+                res.type = myDictTokens[res.value];
             return res;
         }
 
@@ -240,24 +252,26 @@ namespace TranslatorNS
             code = _code;
             string res = "";
 
-            List<Element> elements = new List<Element>();
-            while (true)
-            {
-                Element elem = GetToken();
-                if (elem.type == Token.End)
-                    break;
-                elements.Add(elem);
-            }
+            Statement();
 
-            foreach (var elem in elements)
-            {
-                string value = elem.value;
-                if (myDict.ContainsKey(elem.value))
-                {
-                    value = myDict[elem.value];
-                }
-                res = res + value + " ";                
-            }
+            //List<Element> elements = new List<Element>();
+            //while (true)
+            //{
+            //    Element elem = GetToken();
+            //    if (elem.type == Token.End)
+            //        break;
+            //    elements.Add(elem);
+            //}
+
+            //foreach (var elem in elements)
+            //{
+            //    string value = elem.value;
+            //    if (myDict.ContainsKey(elem.value))
+            //    {
+            //        value = myDict[elem.value];
+            //    }
+            //    res = res + value + " ";                
+            //}
 
             return res;
         }
