@@ -24,13 +24,23 @@ namespace TranslatorNS
             {"else", Token.Else},
             {"while", Token.WHILE_SYM},
             {"do", Token.DO_SYM},
+            {"(", Token.LBRA},
+            {")", Token.RBRA},
+            {"<", Token.LESS},
+            {";", Token.SEMI},
+            {"=", Token.EQUAL},
+            {"a", Token.ID},
+            {"b", Token.ID},
+            {"c", Token.ID},
+            {"d", Token.ID},
         };
 
         private Dictionary<string, string> myDict = new Dictionary<string, string>
         {
             {"if", "если"},
             {"{", "левая_скобка"},
-            {"while", "пока"}
+            {"while", "пока"},
+            {"\t", "    "}
         };
 
         private Dictionary<string, Token> myDictST = new Dictionary<string, Token>
@@ -125,33 +135,36 @@ namespace TranslatorNS
                 }
             }
             else
-                if (code[pos] == '+' || code[pos] == '-')
+            if (code[pos] == '+' || code[pos] == '-')
+            {
+                res.type = Token.SumOp;
+                res.value += code[pos];
+                pos++;
+                return res;
+            }
+            else
+            if (myDictTokens.ContainsKey(code[pos].ToString()))
+            {
+                res.type = myDictTokens[code[pos].ToString()];
+                res.value = code[pos].ToString();
+                pos++;
+                return res;
+
+            }
+            else
+            if (char.IsLetter(code[pos]))
+            {
+                while (Char.IsLetter(code[pos]))
                 {
-                    res.type = Token.SumOp;
                     res.value += code[pos];
                     pos++;
-                }
-                else
-                    if (code[pos] == '*' || code[pos] == '/')
+                    if (pos >= code.Length)
                     {
-                        res.type = Token.MulOp;
-                        res.value += code[pos];
-                        pos++;
+
+                        break;
                     }
-                    else
-                        if (char.IsLetter(code[pos]))
-                        {
-                            while (Char.IsLetter(code[pos]))
-                            {
-                                res.value += code[pos];
-                                pos++;
-                                if (pos >= code.Length)
-                                {
-                                  
-                                    break;
-                                }
-                            }
-                        }
+                }
+            }
             if (myDictTokens.ContainsKey(res.value))
                 res.type = myDictTokens[res.value];
             return res;
@@ -203,8 +216,12 @@ namespace TranslatorNS
         {
             StatementType res = Sum();
             Element elem = NextToken();
-            if (elem.type == Token.ID)
-                return Test();
+            if (elem.type == Token.LESS)
+            {
+                GetToken();
+                return Sum();
+            }
+                
             else
             {
 
@@ -212,6 +229,9 @@ namespace TranslatorNS
 
             return res;
         }
+
+
+        
 
         /* <expr> ::= <test> | <id> "=" <expr> */
         private StatementType Expr()

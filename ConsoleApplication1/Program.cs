@@ -12,12 +12,27 @@ namespace TranslatorNS
         
         static void Main(string[] args)
         {
-            string s = "if while 2  \t  *   343+     \n 12";
-           // s = Console.ReadLine();
 
-            Translator t = new Translator();
+            string[] prog = System.IO.File.ReadAllLines(@"prog.txt");
             
-            Console.WriteLine(t.Translate(s));            
+           Translator t = new Translator();
+
+           for (int i = 0; i < prog.Length; i++)
+           {
+               try
+               {
+                   Console.WriteLine(t.Translate(prog[i].ToLower()));                       
+               }
+               catch (Exception)
+               {
+                   Console.WriteLine("Error in Line {0}", i+1);
+                   throw;
+               }
+              
+           }
+
+
+           
 
             return;
         }
