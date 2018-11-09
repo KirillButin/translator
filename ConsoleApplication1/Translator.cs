@@ -15,8 +15,11 @@ namespace TranslatorNS
             PLUS, MINUS, LESS, SEMI, EQUAL, INT, ID, EOI
         };
 
-        private enum StatementType { VAR, CST, ADD, SUB, LT, SET,
-        IF1, IF2, WHILE, DO, EMPTY, SEQ, EXPR, PROG };
+        private enum StatementType
+        {
+            VAR, CST, ADD, SUB, LT, SET,
+            IF1, IF2, WHILE, DO, EMPTY, SEQ, EXPR, PROG
+        };
 
         private Dictionary<string, string> myDict = new Dictionary<string, string>
         {
@@ -84,8 +87,10 @@ namespace TranslatorNS
 
         private Element GetToken()
         {
-            Element res = new Element();
-            res.value = "";
+            Element res = new Element
+            {
+                value = ""
+            };
 
             while (true)
             {
@@ -116,29 +121,29 @@ namespace TranslatorNS
             }
             else
                 if (code[pos] == '+' || code[pos] == '-')
+            {
+                res.type = Token.SumOp;
+                res.value += code[pos];
+                pos++;
+            }
+            else
+                    if (code[pos] == '*' || code[pos] == '/')
+            {
+                res.type = Token.MulOp;
+                res.value += code[pos];
+                pos++;
+            }
+            else
+                        if (char.IsLetter(code[pos]))
+            {
+                while (Char.IsLetter(code[pos]))
                 {
-                    res.type = Token.SumOp;
                     res.value += code[pos];
                     pos++;
+                    if (pos >= code.Length)
+                        break;
                 }
-                else
-                    if (code[pos] == '*' || code[pos] == '/')
-                    {
-                        res.type = Token.MulOp;
-                        res.value += code[pos];
-                        pos++;
-                    }
-                    else
-                        if (char.IsLetter(code[pos]))
-                        {
-                            while (Char.IsLetter(code[pos]))
-                            {
-                                res.value += code[pos];
-                                pos++;
-                                if (pos >= code.Length)
-                                    break;
-                            }
-                        }
+            }
 
             return res;
         }
@@ -159,8 +164,8 @@ namespace TranslatorNS
             if (elem.type == Token.ID)
                 Test();
             else
-            { 
-            
+            {
+
             }
 
             return res;
@@ -202,7 +207,7 @@ namespace TranslatorNS
                 {
                     value = myDict[elem.value];
                 }
-                res = res + value + " ";                
+                res = res + value + " ";
             }
 
             return res;
