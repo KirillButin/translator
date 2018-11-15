@@ -50,7 +50,7 @@ namespace TranslatorNS
             {"while", Token.WHILE_SYM}
         };
 
-        private static char[] separ = { ' ', '\n', '\t' };
+        private char[] SEPAR = { ' ', '\n', '\t' };
 
         private int pos;
         private string code;
@@ -110,7 +110,7 @@ namespace TranslatorNS
             while (true)
             {
                 if (pos >= code.Length) break;
-                if (!separ.Contains<char>(code[pos]))
+                if (!SEPAR.Contains<char>(code[pos]))
                     break;
 
                 pos++;
@@ -166,7 +166,8 @@ namespace TranslatorNS
                 }
             }
             if (myDictTokens.ContainsKey(res.value))
-                res.type = myDictTokens[res.value];
+                res.type = myDictTokens[res.value]; else
+                throw new Exception("Syntax error");
             return res;
         }
 

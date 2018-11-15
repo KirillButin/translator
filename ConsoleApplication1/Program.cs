@@ -13,20 +13,21 @@ namespace TranslatorNS
         static void Main(string[] args)
         {
 
-            string[] prog = System.IO.File.ReadAllLines(@"prog.txt");
-            
+           string prog = System.IO.File.ReadAllText(@"prog.txt");
+           string[] statements = prog.Split(';');
+ 
            Translator t = new Translator();
 
-           for (int i = 0; i < prog.Length; i++)
+           for (int i = 0; i < statements.Length; i++)
            {
                try
                {
-                   Console.WriteLine(t.Translate(prog[i].ToLower()));                       
+                   Console.WriteLine(t.Translate(statements[i].ToLower()));                       
                }
-               catch (Exception)
+               catch (Exception e)
                {
-                   Console.WriteLine("Error in Line {0}", i+1);
-                   throw;
+                   Console.WriteLine("Line {0} ({1})", i+1,e.Message);
+                   
                }
               
            }
